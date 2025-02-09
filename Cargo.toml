@@ -1,0 +1,12 @@
+[package]
+name = "tor_client"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+tao = "0.31.1"
+tray-icon = "0.19.2"
+image = "0.25.5"
+winreg = "0.55.0"
+crossbeam-channel = "0.5.8"
+arboard = "3.4.1"

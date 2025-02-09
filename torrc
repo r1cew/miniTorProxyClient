@@ -1,0 +1,6 @@
+SocksPort 127.0.0.1:9050
+HTTPTunnelPort 127.0.0.1:8118
+UseBridges 1
+ClientTransportPlugin obfs4 exec obfs4proxy
+Bridge obfs4 91.134.80.41:59987 ACBB6AD034A3C0712265F1BFEC9F27D33B7EFC20 cert=GjxluYzjUz3H1aPRnwncHk46UYhFXvWjn4SA1wwFTfIAFVuBsfsvuZA5KlUi4obxcSaeIQ iat-mode=0
+Bridge obfs4 57.128.68.206:12069 3D31D10FFF77231A352CA982BD373ED9235FD769 cert=xPPp3sNp0xVeoxF+SL7ixf7cefyotL7eBCgPctKyqosvDZMKD2TvvEccUcR5IFkJyM4qFQ iat-mode=0
