@@ -36,7 +36,15 @@ struct SharedState {
     proxy_enabled: bool,
 }
 
+
 fn main() -> Result<(), Box<dyn std::error::Error>> {
+
+    let exe_dir = std::env::current_exe()?
+    .parent()
+    .expect("Failed to get EXE directory")
+    .to_path_buf();
+    std::env::set_current_dir(&exe_dir)?;
+
     // Загружаем иконки
     let icons = load_icons()?;
     
@@ -62,13 +70,24 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     // Пункт для обновления мостов (ид="1002")
     let update_bridges_item = MenuItem::new("Обновить мосты из буфера обмена", true, None);
     // Пункт для выхода (ид="1003")
+
+    let auto_start_enabled = registry_utils::is_auto_start_enabled().unwrap_or(false);
+    let auto_start_item = MenuItem::new(
+        if auto_start_enabled {
+            "Убрать из автозагрузки"
+        } else {
+            "Добавить в автозагрузку"
+        },
+        true,
+        None,
+    );
     let exit_item = MenuItem::new("Выход", true, None);
     
     // Добавляем пункты в меню
     menu.append(&proxy_item)?;
     menu.append(&update_bridges_item)?;
+    menu.append(&auto_start_item)?;
     menu.append(&exit_item)?;
-
     // Устанавливаем начальную иконку в зависимости от состояния
     let initial_icon_idx = match (if proxy_enabled { AppState::TorWithProxy } else { AppState::TorStopped }, proxy_enabled) {
         (AppState::TorStopped, _) => 0,
@@ -162,8 +181,41 @@ Bridge {}"#,
                                 Err(e) => eprintln!("Ошибка доступа к буферу обмена: {}", e),
                             }
                         },
-                        // "1003" - выход (при выходе, если прокси включён – отключаем его)
                         "1003" => {
+                            // Получаем статус автозагрузки с обработкой возможной ошибки
+                            let is_enabled = match registry_utils::is_auto_start_enabled() {
+                                Ok(status) => status,
+                                Err(e) => {
+                                    eprintln!("Ошибка проверки автозагрузки: {}", e);
+                                    false // В случае ошибки считаем, что автозагрузка отключена
+                                }
+                            };
+
+                            // Переключаем состояние автозагрузки
+                            let result = if is_enabled {
+                                registry_utils::disable_auto_start()
+                            } else {
+                                registry_utils::enable_auto_start()
+                            };
+
+                            // Обрабатываем результат операции
+                            match result {
+                                Ok(()) => {
+                                    let new_text = if is_enabled {
+                                        "Добавить в автозагрузку"
+                                    } else {
+                                        "Убрать из автозагрузки"
+                                    };
+                                    auto_start_item.set_text(new_text);
+                                }
+                                Err(e) => {
+                                    eprintln!("Ошибка изменения автозагрузки: {}", e);
+                                    // Можно добавить дополнительную обработку ошибок
+                                }
+                            }
+                        },
+                        // "1003" - выход (при выходе, если прокси включён – отключаем его)
+                        "1004" => {
                             if let Err(e) = Command::new("taskkill")
                                 .args(&["/F", "/IM", "tor.exe"])
                                 .output()

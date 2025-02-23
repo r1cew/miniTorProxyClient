@@ -7,8 +7,9 @@ use std::os::windows::process::CommandExt;
 
 const CREATE_NO_WINDOW: u32 = 0x08000000;
 
+
 pub fn start_tor_monitor(state: Arc<Mutex<SharedState>>, event_proxy: EventLoopProxy<UserEvent>) {
-    let mut child = Command::new(r"./tor.exe")
+    let mut child = Command::new("tor.exe")
         .arg("-f")
         .arg(r"./torrc")
         .stdout(Stdio::piped())
