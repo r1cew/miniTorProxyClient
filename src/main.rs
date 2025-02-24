@@ -11,9 +11,7 @@ use tray_icon::{
 
 mod proxy;
 mod tor_controller;
-mod registry_utils; // модуль для работы с реестром
-
-// Импорт для работы с буфером обмена и файловой системой
+mod registry_utils;
 use arboard::Clipboard;
 use std::fs;
 use std::process::Command;

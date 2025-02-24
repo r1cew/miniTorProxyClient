@@ -23,11 +23,8 @@ fn init_auto_launch() -> AutoLaunch {
     let exe_str = exe_path.to_str().unwrap();
     
     // Добавляем кавычки, если путь содержит пробелы
-    let escaped_path = if exe_str.contains(' ') {
-        format!("\"{}\"", exe_str)
-    } else {
-        format!("\"{}\"", exe_str)
-    };
+    let escaped_path = format!("\"{}\"", exe_str);
+
 
     AutoLaunch::new("TorProxyApp", &escaped_path, &["--hidden"])
 }
